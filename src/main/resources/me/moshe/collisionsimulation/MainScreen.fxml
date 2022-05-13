@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1080.0" style="-fx-background-color: #2C2F33;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.moshe.collisionsimulation.MainScreenController">
+   <children>
+      <Button fx:id="generateBallsBtn" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#spawnBalls" text="Generate Balls" />
+      <Button fx:id="startBtn" layoutX="14.0" layoutY="48.0" mnemonicParsing="false" onAction="#start" prefHeight="25.0" prefWidth="92.0" text="Start" />
+      <Button fx:id="stopBtn" layoutX="14.0" layoutY="48.0" mnemonicParsing="false" onAction="#stop" prefHeight="25.0" prefWidth="92.0" text="Stop" />
+      <Label fx:id="ballSimulatorLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="180.0" layoutY="185.0" prefHeight="350.0" prefWidth="720.0" text="BALLS SIMULATOR" textAlignment="CENTER" textFill="#ff00b7">
+         <font>
+            <Font size="86.0" />
+         </font>
+      </Label>
+      <Slider fx:id="ballCountSlider" layoutX="927.0" layoutY="23.0" showTickLabels="true" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="960.0" layoutY="6.0" prefHeight="17.0" prefWidth="73.0" text="Ball Amount" textAlignment="CENTER" textFill="WHITE" />
+   </children>
+</AnchorPane>
