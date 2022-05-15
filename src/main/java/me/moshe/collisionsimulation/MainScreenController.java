@@ -1,6 +1,5 @@
 package me.moshe.collisionsimulation;
 
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -8,14 +7,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainScreenController implements Initializable {
     @FXML public AnchorPane anchorPane;
@@ -29,6 +24,8 @@ public class MainScreenController implements Initializable {
     private boolean playing = false;
     private final int VELOCITY = 100;
     private final Area area = new Area(135, 73, 900, 625, Color.rgb(142, 225, 147), true);
+    private final FrameHandler frameHandler = new FrameHandler();
+    private int currentFrame;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -36,11 +33,10 @@ public class MainScreenController implements Initializable {
         stopBtn.setViewOrder(2);
         area.setViewOrder(0);
         anchorPane.getChildren().add(area);
-        System.out.println(area.getLeftSide());
     }
 
     @FXML
-    public void spawnBalls(){
+    public void spawnBalls() {
         playing = false;
         ballSimulatorLabel.setVisible(false);
         clearBallArray(ball_arr);
@@ -57,15 +53,22 @@ public class MainScreenController implements Initializable {
             System.out.println("Array is empty. Please generate balls.");
             return;
         }
+        currentFrame = 0;
         generateBallsBtn.setVisible(false);
         startBtn.setVisible(false);
         stopBtn.setVisible(true);
         startSim();
+        frameHandler.start();
     }
 
     private void startSim() {
         playing = true;
+        int collisionFrame = 0;
+        for (Ball ball:ball_arr) {
+            collisionFrame = calculateCollisionFrame(ball.getBoundsInParent().getCenterX(), ball.getRadius(), area.getLeftSide(), currentFrame);
+        }
         Timer checker = new Timer();
+        int finalCollisionFrame = collisionFrame;
         checker.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -76,13 +79,15 @@ public class MainScreenController implements Initializable {
                         return;
                     }
                     for (Ball ball:ball_arr) {
-                        ball.checkEdgeCollision(area.getLeftSide(), area.getTop(), area.getRightSide(), area.getBottom());
+                        if(finalCollisionFrame <= frameHandler.getCurrentFrame()) {
+                            ball.setOppositeDirection();
+                            checker.cancel();
+                            checker.purge();
+                        }
                     }
                 });
             }
-        }, 0, 1);
-
-
+        }, 0, 50);
         Timer move = new Timer();
         move.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -96,12 +101,15 @@ public class MainScreenController implements Initializable {
                     for (Ball b : ball_arr){
                         b.move(DIRECTION.LEFT);
                     }
-
                 });
             }
         }, 0, 1);
     }
 
+    /**
+     * Stops the simulation
+     * Clears all {@link Ball}s from the screen and stops the simulation if its started.
+     */
     @FXML
     public void stop(){
         anchorPane.getChildren().removeIf(n -> (n instanceof Ball));
@@ -109,18 +117,15 @@ public class MainScreenController implements Initializable {
         startBtn.setVisible(true);
         generateBallsBtn.setVisible(true);
         playing = false;
+        frameHandler.stop();
         clearBallArray(ball_arr);
     }
-    private void checkEdges(Ball ball) {
-        if (ball.getBoundsInParent().getCenterX() - ball.getRadius() <= area.getLeftSide() || ball.getBoundsInParent().getCenterX() + ball.getRadius() >= area.getRightSide() ||
-            ball.getBoundsInParent().getCenterY() - ball.getRadius() <= area.getTop() || ball.getBoundsInParent().getCenterY() + ball.getRadius() >= area.getBottom()){
-                ball.setOppositeDirection();
-        }
-    }
-    private void checkCollision(Ball b) {
-        for (Ball n : ball_arr)
-            if (b.getCenterX() - b.getRadius() <= n.getRadius() + n.getCenterX() || b.getRadius() + b.getCenterY() >= n.getRadius() + n.getCenterY())
-                b.setOppositeDirection();
+
+    private int calculateCollisionFrame(double x, double radius, int left, double frame){
+        if(x - radius <= left)
+            return (int) frame;
+        frame++;
+        return calculateCollisionFrame(x - 2.27, radius, left, frame);
     }
 
     private void clearBallArray(Ball[] a){
@@ -135,6 +140,15 @@ public class MainScreenController implements Initializable {
         }
         return false;
     }
+
+    /**
+     * Generate a random number within a given bound
+     *
+     * @param min The minimum for the bound
+     * @param max The maximum for the bound
+     *
+     * @return The random number between the given bound
+     */
     private int generateRandom(int min, int max){
         return rnd.nextInt(max - min) + min;
     }
@@ -144,14 +158,6 @@ public class MainScreenController implements Initializable {
     private DIRECTION getRandomDirection(){
         return directions.get(rnd.nextInt(directions.size()));
     }
-//    private void runTask(T[] arr, Callable<T> task) throws Exception {
-//        if(arr instanceof Ball[]){
-//            Ball[] bArr = (Ball[]) arr;
-//            for (Ball b:bArr) {
-//                task.call();
-//            }
-//        }
-//    }
 
 
 }

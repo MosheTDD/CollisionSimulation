@@ -9,9 +9,10 @@ import javafx.util.Duration;
 public class Ball extends Circle{
 
     private int speed, velocity;
-    DIRECTION direction;
+    private DIRECTION direction;
     private int pixelsToMove = 10;
-    TranslateTransition translateTransition = new TranslateTransition();
+    private final TranslateTransition translateTransition = new TranslateTransition();
+
     public Ball(double centerX, double centerY, double radius, Color color, int velocity, DIRECTION direction){
         super(centerX, centerY, radius, color);
         this.direction = direction;
@@ -36,26 +37,9 @@ public class Ball extends Circle{
     }
 
     public void setOppositeDirection(){
+        translateTransition.stop();
         this.setPixelsToMove(this.getPixelsToMove() * (-1));
-    }
-
-    public void checkEdgeCollision(int left, int top, int right, int bottom) {
-        if(this.getBoundsInParent().getCenterX() + this.getRadius() <= left){
-            this.setOppositeDirection();
-        }
-
-        if(this.getBoundsInParent().getCenterX() + this.getRadius() >= right){
-            this.setOppositeDirection();
-        }
-
-        if(this.getBoundsInParent().getCenterY() + this.getRadius() <= top){
-            this.setOppositeDirection();
-        }
-
-        if(this.getBoundsInParent().getCenterY() - this.getRadius() >= bottom){
-            this.setOppositeDirection();
-        }
-
+        translateBallAnimation(this.pixelsToMove, 0, this.velocity);
     }
 
     private void translateBallAnimation(double x, double y, int velocity) {
