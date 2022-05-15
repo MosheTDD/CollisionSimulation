@@ -87,7 +87,7 @@ public class MainScreenController implements Initializable {
                     }
                 });
             }
-        }, 0, 50);
+        }, 0, 100);
         Timer move = new Timer();
         move.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -122,6 +122,7 @@ public class MainScreenController implements Initializable {
     }
 
     private int calculateCollisionFrame(double x, double radius, int left, double frame){
+        //System.out.println("Left: " + left + "\nX: " + x + "\nFrame: " + frame);
         if(x - radius <= left)
             return (int) frame;
         frame++;

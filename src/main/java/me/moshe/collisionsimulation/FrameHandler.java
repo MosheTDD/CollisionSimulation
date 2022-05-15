@@ -15,7 +15,7 @@ public class FrameHandler extends AnimationTimer {
         return currentFrame;
     }
 
-
+    
     public void stop(){
         super.stop();
         currentFrame = 0;

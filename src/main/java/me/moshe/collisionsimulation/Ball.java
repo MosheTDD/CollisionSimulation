@@ -37,9 +37,7 @@ public class Ball extends Circle{
     }
 
     public void setOppositeDirection(){
-        translateTransition.stop();
         this.setPixelsToMove(this.getPixelsToMove() * (-1));
-        translateBallAnimation(this.pixelsToMove, 0, this.velocity);
     }
 
     private void translateBallAnimation(double x, double y, int velocity) {
