@@ -7,10 +7,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class MainScreenController implements Initializable {
     @FXML public AnchorPane anchorPane;
@@ -23,7 +24,8 @@ public class MainScreenController implements Initializable {
     private final List<DIRECTION> directions = List.of(DIRECTION.values());
     private boolean playing = false;
     private final int VELOCITY = 100;
-    private final Area area = new Area(135, 73, 900, 625, Color.rgb(142, 225, 147), true);
+    //private final Border border = new Border(135, 73, 900, 625, Color.rgb(142, 225, 147), true);
+    private Border border = new Border(1080/2, 720/2, 900, 625);
     private final FrameHandler frameHandler = new FrameHandler();
     private int currentFrame;
 
@@ -31,8 +33,7 @@ public class MainScreenController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         startBtn.setViewOrder(1);
         stopBtn.setViewOrder(2);
-        area.setViewOrder(0);
-        anchorPane.getChildren().add(area);
+        anchorPane.getChildren().addAll(border.getLines());
     }
 
     @FXML
@@ -42,8 +43,8 @@ public class MainScreenController implements Initializable {
         clearBallArray(ball_arr);
         anchorPane.getChildren().removeIf(n -> (n instanceof Ball));
         for (int i = 0; i < ball_arr.length; i++) {
-            ball_arr[i] = new Ball(generateRandom(area.getLeftSide(), area.getRightSide()), generateRandom(area.getTop(), area.getBottom()), 20, Color.HOTPINK, VELOCITY, getRandomDirection());
-            anchorPane.getChildren().add(ball_arr[i]);
+            //ball_arr[i] = new Ball(generateRandom(border.getLeftSide(), border.getRightSide()), generateRandom(border.getTop(), border.getBottom()), 20, Color.HOTPINK, VELOCITY, getRandomDirection());
+            //anchorPane.getChildren().add(ball_arr[i]);
         }
     }
 
@@ -65,7 +66,7 @@ public class MainScreenController implements Initializable {
         playing = true;
         int collisionFrame = 0;
         for (Ball ball:ball_arr) {
-            collisionFrame = calculateCollisionFrame(ball.getBoundsInParent().getCenterX(), ball.getRadius(), area.getLeftSide(), currentFrame);
+            //collisionFrame = calculateCollisionFrame(ball.getBoundsInParent().getCenterX(), ball.getRadius(), border.getLeftSide(), currentFrame);
         }
         Timer checker = new Timer();
         int finalCollisionFrame = collisionFrame;
@@ -153,9 +154,9 @@ public class MainScreenController implements Initializable {
     private int generateRandom(int min, int max){
         return rnd.nextInt(max - min) + min;
     }
-    private int calcBallAmount(int r){
-        return (int) ((area.getWidth() / (2*r)) * (area.getHeight() / (2*r)));
-    }
+//    private int calcBallAmount(int r){
+//        return (int) ((border.getWidth() / (2*r)) * (border.getHeight() / (2*r)));
+//    }
     private DIRECTION getRandomDirection(){
         return directions.get(rnd.nextInt(directions.size()));
     }
