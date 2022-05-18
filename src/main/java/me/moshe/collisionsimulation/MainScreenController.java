@@ -15,19 +15,21 @@ import java.util.function.Consumer;
 
 public class MainScreenController implements Initializable {
     @FXML public AnchorPane anchorPane;
-    @FXML public Label ballSimulatorLabel;
+    @FXML public Label ballSimulatorLabel, fpsLabel;
     @FXML public Button generateBallsBtn,startBtn, stopBtn;
-    Random rnd = new Random();
-    private final int BALL_AMOUNT = 1;
-    private final int WIN_WIDTH = Main.getWinWidth(), WIN_HEIGHT = Main.getWinHeight();
-    private Ball[] ball_arr = new Ball[BALL_AMOUNT];
-    private final List<DIRECTION> directions = List.of(DIRECTION.values());
+
+    private final int WIN_WIDTH = Main.getWinWidth();
+    private final int WIN_HEIGHT = Main.getWinHeight();
+
     private boolean playing = false;
-    private final int VELOCITY = 100;
-    //private final Border border = new Border(135, 73, 900, 625, Color.rgb(142, 225, 147), true);
-    private Border border = new Border(1080/2, 720/2, 900, 625);
-    private final FrameHandler frameHandler = new FrameHandler();
     private int currentFrame;
+
+    private final FrameHandler frameHandler = new FrameHandler();
+    private final Balls balls = new Balls(1, 50, Color.HOTPINK, 20);
+
+    public final static Random rnd = new Random();
+    public final static Border border = new Border(1080/2, 720/2, 800, 585, 10, Color.LIGHTGREEN);
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -38,19 +40,17 @@ public class MainScreenController implements Initializable {
 
     @FXML
     public void spawnBalls() {
+        balls.getBalls().clear();
+        balls.addBalls();
         playing = false;
         ballSimulatorLabel.setVisible(false);
-        clearBallArray(ball_arr);
         anchorPane.getChildren().removeIf(n -> (n instanceof Ball));
-        for (int i = 0; i < ball_arr.length; i++) {
-            //ball_arr[i] = new Ball(generateRandom(border.getLeftSide(), border.getRightSide()), generateRandom(border.getTop(), border.getBottom()), 20, Color.HOTPINK, VELOCITY, getRandomDirection());
-            //anchorPane.getChildren().add(ball_arr[i]);
-        }
+        anchorPane.getChildren().addAll(balls.getBalls());
     }
 
     @FXML
     public void start(){
-        if (isEmpty(ball_arr)){
+        if (balls.getBalls().isEmpty()){
             System.out.println("Array is empty. Please generate balls.");
             return;
         }
@@ -65,9 +65,6 @@ public class MainScreenController implements Initializable {
     private void startSim() {
         playing = true;
         int collisionFrame = 0;
-        for (Ball ball:ball_arr) {
-            //collisionFrame = calculateCollisionFrame(ball.getBoundsInParent().getCenterX(), ball.getRadius(), border.getLeftSide(), currentFrame);
-        }
         Timer checker = new Timer();
         int finalCollisionFrame = collisionFrame;
         checker.scheduleAtFixedRate(new TimerTask() {
@@ -79,13 +76,10 @@ public class MainScreenController implements Initializable {
                         checker.purge();
                         return;
                     }
-                    for (Ball ball:ball_arr) {
-                        if(finalCollisionFrame <= frameHandler.getCurrentFrame()) {
-                            ball.setOppositeDirection();
-                            checker.cancel();
-                            checker.purge();
-                        }
+                    for (Ball ball: balls.getBalls()) {
+                        ball.checkIntersection(border.getLeft(), border.getTop(), border.getRight(), border.getBottom());
                     }
+                    fpsLabel.setText(String.valueOf(frameHandler.getFps()));
                 });
             }
         }, 0, 100);
@@ -99,12 +93,12 @@ public class MainScreenController implements Initializable {
                         move.purge();
                         return;
                     }
-                    for (Ball b : ball_arr){
+                    for (Ball b : balls.getBalls()){
                         b.move(DIRECTION.LEFT);
                     }
                 });
             }
-        }, 0, 1);
+        }, 0, 10);
     }
 
     /**
@@ -119,7 +113,7 @@ public class MainScreenController implements Initializable {
         generateBallsBtn.setVisible(true);
         playing = false;
         frameHandler.stop();
-        clearBallArray(ball_arr);
+        balls.getBalls().clear();
     }
 
     private int calculateCollisionFrame(double x, double radius, int left, double frame){
@@ -143,6 +137,14 @@ public class MainScreenController implements Initializable {
         return false;
     }
 
+    public static Border getBorder(){
+        return border;
+    }
+
+    public static Random getRnd(){
+        return rnd;
+    }
+
     /**
      * Generate a random number within a given bound
      *
@@ -157,9 +159,6 @@ public class MainScreenController implements Initializable {
 //    private int calcBallAmount(int r){
 //        return (int) ((border.getWidth() / (2*r)) * (border.getHeight() / (2*r)));
 //    }
-    private DIRECTION getRandomDirection(){
-        return directions.get(rnd.nextInt(directions.size()));
-    }
 
 
 }

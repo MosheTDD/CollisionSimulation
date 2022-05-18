@@ -42,17 +42,34 @@ public class Border {
         int dividedHeight = height / 2;
 
         int leftX = x - dividedWidth;
-
+        int rightX = x + dividedWidth;
         left.setStartX(leftX);
         left.setEndX(leftX);
         left.setStartY(y - dividedHeight);
         left.setEndY(y + dividedHeight);
 
+        top.setStartX(leftX);
+        top.setEndX(rightX);
+        top.setStartY(y - dividedHeight);
+        top.setEndY(y - dividedHeight);
+
+        right.setStartX(rightX);
+        right.setEndX(rightX);
+        right.setStartY(y - dividedHeight);
+        right.setEndY(y + dividedHeight);
+
+        bottom.setStartX(leftX);
+        bottom.setEndX(rightX);
+        bottom.setStartY(y + dividedHeight);
+        bottom.setEndY(y + dividedHeight);
+
+
+
 
         lines.forEach(line -> {
             line.setStrokeWidth(strokeWidth);
             line.setStroke(color);
-            line.setViewOrder(0);
+            line.setViewOrder(3);
         });
 
     }

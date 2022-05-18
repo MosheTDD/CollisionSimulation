@@ -24,5 +24,6 @@
       </Label>
       <Slider fx:id="ballCountSlider" layoutX="927.0" layoutY="23.0" showTickLabels="true" />
       <Label alignment="CENTER" contentDisplay="CENTER" layoutX="960.0" layoutY="6.0" prefHeight="17.0" prefWidth="73.0" text="Ball Amount" textAlignment="CENTER" textFill="WHITE" />
+      <Label fx:id="fpsLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="856.0" layoutY="10.0" prefHeight="33.0" prefWidth="35.0" textAlignment="CENTER" textFill="WHITE" />
    </children>
 </AnchorPane>
